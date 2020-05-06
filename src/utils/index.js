@@ -24,6 +24,8 @@ export function getStorage(obj, fn) {
 /**
  * hash
  */
+const I64BIT_TABLE =
+ 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-'.split('');
 export function hash(input){
     var hash = 5381;
     var i = input.length - 1;
