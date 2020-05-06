@@ -80,7 +80,7 @@ import {
   hash
 } from '@/utils'
 import { Octokit }  from "@octokit/rest"
-import { createTokenAuth } from "@octokit/auth-token";
+// import { createTokenAuth } from "@octokit/auth-token";
 export default {
   name: 'App',
   components: {
@@ -239,6 +239,7 @@ export default {
     },
     initClientGithub(){
       var vm = this
+      console.log(vm.userForm.userToken)
       vm.github = new Octokit({
             auth: `token ${vm.userForm.userToken}`
           });

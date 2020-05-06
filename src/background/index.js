@@ -46,7 +46,7 @@ chrome.runtime.onConnect.addListener(function (externalPort) {
             var gistId = result["tab_sync_gist_id"];
             if(gistId){
               //console.log(gistId)
-              const promise = vm.github.gists.get({ gist_id: gistId });
+              const promise = settings.github.gists.get({ gist_id: gistId });
               const res = await promise.catch(err => {
                 // console.log(err)
               });
