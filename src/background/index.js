@@ -1,6 +1,7 @@
 import {
   getStorage
 } from '@/utils'
+import { Octokit }  from "@octokit/rest"
 
 window.chrome.runtime.onInstalled.addListener(function(details) {
   if (details.reason == "install") {
@@ -11,9 +12,16 @@ window.chrome.runtime.onInstalled.addListener(function(details) {
   }
 });
 
-var tabs_ = []
-   //初始化数据
-   getStorage(["tab_sync_ids"], function(result) {
+var settings = {
+  tabs : [],
+  userToken : '',
+  github: null
+};
+
+chrome.runtime.onConnect.addListener(function (externalPort) {
+  externalPort.onDisconnect.addListener(function() {
+  var ignoreError = chrome.runtime.lastError;
+  getStorage(["tab_sync_ids"], function(result) {
     var ids = result["tab_sync_ids"];
     if(ids){
       ids = JSON.parse(ids);
@@ -26,9 +34,31 @@ var tabs_ = []
       if(result){
           for(var index in result){
               var tab = JSON.parse(result[index]);
-              tabs_.push(tab)
+              settings.tabs.push(tab)
           }
       }
+      getStorage(["tab_sync_user_token"], function(result) {
+        settings.userToken = result["tab_sync_user_token"];
+          settings.github = new Octokit({
+            auth: `token ${settings.userToken}`
+          })
+          getStorage(["tab_sync_gist_id"], async function(result) {
+            var gistId = result["tab_sync_gist_id"];
+            if(gistId){
+              //console.log(gistId)
+              const promise = vm.github.gists.get({ gist_id: gistId });
+              const res = await promise.catch(err => {
+                // console.log(err)
+              });
+              if (res) {
+                res.data.files['tab.json'].content = JSON.stringify(settings.tabs)
+                settings.github.request("PATCH /gists/:gist_id",res.data);
+              }
+            }
+          });
+         })
+      });
     });
+  });
 });
-export default tabs_
+

@@ -17,6 +17,7 @@ module.exports = {
     'popup' : './src/popup/index.js'
   },
   output: {
+    libraryTarget: 'umd',
     path: config.build.assetsRoot,
     filename: 'js/[name].js',
     publicPath: process.env.NODE_ENV === 'production'

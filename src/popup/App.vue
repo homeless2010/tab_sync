@@ -1,17 +1,26 @@
 <template>
   <div id="app">
     <el-row>
-     <el-popover
-      placement="bottom"
-      title="标题"
-      trigger="manual"
-      content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
-      v-model="isSync">
-      <el-button slot="reference" circle icon="el-icon-upload" @click="isSync = !isSync"></el-button>
+      <el-col :span="6">
+        <el-popover 
+        placement="bottom"
+        title="github授权"
+        trigger="manual"
+        v-model="isSync">
+        <el-form ref="userForm" :model="userForm" size="mini" label-width="auto" :inline="true" >
+          <el-form-item label="" inline-message prop="userToken" :rules="[{ required: true, message: '请输入token'}]" label-width="0px">
+            <el-input v-model="userForm.userToken" placeholder="请输入github token" clearable />
+          </el-form-item>
+        <div style="text-align: center; margin: 0;">
+          <el-button type="primary" size="mini" @click="handleSubmit">确定</el-button>
+        </div>
+        </el-form>
+      <el-button slot="reference" circle icon="el-icon-upload" type="info" @click="isSync = !isSync"></el-button>
     </el-popover>
-    </el-row>
-    <el-row>
-      <el-button type="primary" round icon="el-icon-plus" @click="handleSaveTabs">一键保存至书签</el-button>
+      </el-col>
+      <el-col :span="18">
+      <el-button type="primary" round @click="handleSaveTabs">一键保存至书签</el-button>
+      </el-col>
     </el-row>
       <el-table 
         style="margin-top:10px;"
@@ -67,9 +76,9 @@
 <script>
 import {
   setStorage,
-  getStorage
+  getStorage,
+  hash
 } from '@/utils'
-import tabs_ from '../background'
 import { Octokit }  from "@octokit/rest"
 import { createTokenAuth } from "@octokit/auth-token";
 export default {
@@ -80,7 +89,9 @@ export default {
     return {
       isSync : false,
       github : null,
-      userToken : '5d7b12e3fd927abef41a483d02604835207872ad',
+      userForm:{
+        userToken : ''
+      },
       userName: '',
       tabData : [
         // {
@@ -106,12 +117,13 @@ export default {
     }
   },
   async created(){
-    this.tabData = tabs_
+    chrome.runtime.connect();
     // chrome.extension.getBackgroundPage()
     // chrome.storage.local.remove(['tab_sync_gist_id']);
     // chrome.storage.local.remove(['tab_sync_ids']);
-    await this.initClientGithub()
-    await this.syncTabGist()
+   this.initStorage()
+  // await this.initClientGithub()
+  // await this.syncTabGist()
   },
   mounted(){
   },
@@ -205,8 +217,12 @@ export default {
             // console.log(err)
           });
           if (res) {
-            console.log(res.data.files['tab.json'].content)
-            vm.tabData = JSON.parse(res.data.files['tab.json'].content)
+            if(hash(res.data.files['tab.json'].content) === hash(JSON.stringify(vm.tabData))){
+
+            }else{
+              // TODO 优化对比 
+              vm.tabData = JSON.parse(res.data.files['tab.json'].content)
+            }
             return res;
           }
         }else{
@@ -224,7 +240,7 @@ export default {
     initClientGithub(){
       var vm = this
       vm.github = new Octokit({
-            auth: `token ${vm.userToken}`
+            auth: `token ${vm.userForm.userToken}`
           });
           vm.github.users
         .getAuthenticated({})
@@ -249,6 +265,43 @@ export default {
         // console.log("Sync : " + "Response from GitHub is: ");
         // console.log(res);
       }
+    },
+    handleSubmit(){
+      var vm = this;
+      vm.$refs['userForm'].validate((valid) => {
+          if (valid) {
+            vm.isSync = !vm.isSync
+            setStorage({"tab_sync_user_token" :  vm.userForm.userToken});
+          } else { 
+            console.log('error submit!!')  
+           }
+        })
+    },
+    initStorage(){
+      var vm = this
+      getStorage(["tab_sync_ids"], function(result) {
+      var ids = result["tab_sync_ids"];
+      if(ids){
+        ids = JSON.parse(ids);
+      }
+      var idArray = new Array();
+      for (var id in ids) {
+          idArray[id] = "tab_sync_tab_"+ids[id];
+      }
+      getStorage(idArray, function(result) {
+        if(result){
+            for(var index in result){
+                var tab = JSON.parse(result[index]);
+                vm.tabData.push(tab)
+            }
+        }
+          getStorage(["tab_sync_user_token"], function(result) {
+              vm.userForm.userToken = result["tab_sync_user_token"];
+              vm.initClientGithub()
+              vm.syncTabGist()
+            })
+          });
+      });
     }
   }
 }
@@ -266,5 +319,9 @@ padding: 5px 5px;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   margin-top: 10px;
+}
+.el-popover .el-popover__title{
+  font-weight:600;
+  font-size:12px;
 }
 </style>
