@@ -32,6 +32,7 @@ chrome.runtime.onConnect.addListener(function (externalPort) {
     }
     getStorage(idArray, function(result) {
       if(result){
+          settings.tabs = []
           for(var index in result){
               var tab = JSON.parse(result[index]);
               settings.tabs.push(tab)

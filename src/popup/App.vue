@@ -3,8 +3,9 @@
     <el-row>
       <el-col :span="6">
         <el-popover 
+        ref="popover"
         placement="bottom"
-        title="github授权"
+        title="xxxx"
         trigger="manual"
         v-model="isSync">
         <el-form ref="userForm" :model="userForm" size="mini" label-width="auto" :inline="true" >
@@ -80,6 +81,7 @@ import {
   hash
 } from '@/utils'
 import { Octokit }  from "@octokit/rest"
+import axios from 'axios'
 // import { createTokenAuth } from "@octokit/auth-token";
 export default {
   name: 'App',
@@ -126,6 +128,7 @@ export default {
   // await this.syncTabGist()
   },
   mounted(){
+      this.$refs.popover.$el.children[0].children[0].innerHTML = 'github授权<a href="https://github.com/settings/tokens/new" target="_blank"><i class="el-icon-question"></i></a>'
   },
   methods : {
     handleOpenTab(row,index){
@@ -221,7 +224,16 @@ export default {
 
             }else{
               // TODO 优化对比 
-              vm.tabData = JSON.parse(res.data.files['tab.json'].content)
+              // 文件 > 1KB
+              if(res.data.files['tab.json'].truncated){
+                 axios.get(res.data.files['tab.json'].raw_url, {
+                    params: {}
+                }).then(res => {
+                    vm.tabData = res.data
+                })
+              }else{
+                vm.tabData = JSON.parse(res.data.files['tab.json'].content)
+              }
             }
             return res;
           }
@@ -239,7 +251,6 @@ export default {
     },
     initClientGithub(){
       var vm = this
-      console.log(vm.userForm.userToken)
       vm.github = new Octokit({
             auth: `token ${vm.userForm.userToken}`
           });
@@ -291,6 +302,8 @@ export default {
       }
       getStorage(idArray, function(result) {
         if(result){
+            // TODO 待优化
+            vm.tabData = []
             for(var index in result){
                 var tab = JSON.parse(result[index]);
                 vm.tabData.push(tab)
