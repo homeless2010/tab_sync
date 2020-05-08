@@ -11,5 +11,5 @@
   1. ![how_to_use.png](http://ww1.sinaimg.cn/large/a411b231ly1gelch6vujnj20w00i0q30.jpg)
   点击提示按钮->获取github token**必须包含gist权限**
   ----------------------------------------------------------------------
-  ![微信图片_20200508202921.jpg](http://ww1.sinaimg.cn/large/a411b231ly1gelcp3vmdfj20st0sttaf.jpg)
+![无标题.png](http://ww1.sinaimg.cn/large/a411b231ly1gelcpzkauoj20hs0b4gml.jpg)
 
