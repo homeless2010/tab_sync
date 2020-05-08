@@ -1,6 +1,6 @@
 # tab-sync
 
-> A Vue.js project
+> chrome tabs一键保存与同步（gist）
 
 ## Build Setup
 
