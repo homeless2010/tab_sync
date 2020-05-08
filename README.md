@@ -10,4 +10,6 @@
 - 使用  
   1. ![how_to_use.png](http://ww1.sinaimg.cn/large/a411b231ly1gelch6vujnj20w00i0q30.jpg)
   点击提示按钮->获取github token**必须包含gist权限**
+  ----------------------------------------------------------------------
+  ![微信图片_20200508211218.jpg](http://ww1.sinaimg.cn/large/a411b231ly1gelco5l0cjj20st0sttaf.jpg)
 
