@@ -10,5 +10,3 @@
 - 使用
   >点击提示按钮->获取github token**必须授予gist权限**
   ![how_to_use.png](http://ww1.sinaimg.cn/large/a411b231ly1gelch6vujnj20w00i0q30.jpg)
-  ----------------------------------------------------------------------
-  [![YKctoT.md.jpg](https://s1.ax1x.com/2020/05/08/YKctoT.md.jpg)](https://imgchr.com/i/YKctoT)
