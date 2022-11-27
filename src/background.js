@@ -1,6 +1,5 @@
-import {
-  getStorage
-} from '@/utils'
+/* eslint-disable no-undef */
+import {getStorage} from './utils'
 import { Octokit }  from "@octokit/rest"
 
 window.chrome.runtime.onInstalled.addListener(function(details) {
@@ -20,7 +19,6 @@ var settings = {
 
 chrome.runtime.onConnect.addListener(function (externalPort) {
   externalPort.onDisconnect.addListener(function() {
-  var ignoreError = chrome.runtime.lastError;
   getStorage(["tab_sync_ids"], function(result) {
     var ids = result["tab_sync_ids"];
     if(ids){
@@ -48,7 +46,7 @@ chrome.runtime.onConnect.addListener(function (externalPort) {
             if(gistId){
               //console.log(gistId)
               const promise = settings.github.gists.get({ gist_id: gistId });
-              const res = await promise.catch(err => {
+              const res = await promise.catch(() => {
                 // console.log(err)
               });
               if (res) {

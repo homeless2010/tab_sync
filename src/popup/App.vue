@@ -118,6 +118,7 @@ export default {
       }
     }
   },
+  /* global chrome */
   async created(){
     chrome.runtime.connect();
     // chrome.extension.getBackgroundPage()
@@ -131,7 +132,7 @@ export default {
       this.$refs.popover.$el.children[0].children[0].innerHTML = 'github授权<a href="https://github.com/settings/tokens/new" target="_blank"><i class="el-icon-question"></i></a>'
   },
   methods : {
-    handleOpenTab(row,index){
+    handleOpenTab(row){
       var urls = []
       for (var id in row.childTabs) {
           urls.push(row.childTabs[id].url)
@@ -141,33 +142,33 @@ export default {
     handleSaveTabs(){
       var vm = this
       chrome.windows.getCurrent(function(window){
-        chrome.tabs.getAllInWindow(window.id, function(tabs) {
-          var id = vm.$uuid.v4()
-          var name = new Date().format('yyyy-MM-dd hh:mm:ss');
-          var tabArray = new Array();
-          for (var i=0; i<tabs.length; i++){
-            var tempTab = {};
-            tempTab['favIconUrl'] = tabs[i]['favIconUrl'];
-            tempTab['id'] = tabs[i]['id'];
-            tempTab['index'] = tabs[i]['index'];
-            tempTab['title'] = tabs[i]['title'];
-            tempTab['url'] = tabs[i]['url'];
-            tabArray[i] = tempTab;
-          }
-          var data = new Object();
-          data.id = id;
-          data.title = name;
-          data.childTabs = tabArray;
-          //缓存tab id
-          vm.cacheTabIds(id);
-          //缓存tab单个信息
-          var tabObj = {}
-          tabObj["tab_sync_tab_"+id] = JSON.stringify(data)
-          setStorage(tabObj);
-          //添加到页面
-          vm.tabData.push(data)
-        });
-		  });
+          chrome.tabs.getAllInWindow(window.id, function(tabs) {
+            var id = vm.$uuid.v4()
+            var name = new Date().format('yyyy-MM-dd hh:mm:ss');
+            var tabArray = new Array();
+            for (var i=0; i<tabs.length; i++){
+              var tempTab = {};
+              tempTab['favIconUrl'] = tabs[i]['favIconUrl'];
+              tempTab['id'] = tabs[i]['id'];
+              tempTab['index'] = tabs[i]['index'];
+              tempTab['title'] = tabs[i]['title'];
+              tempTab['url'] = tabs[i]['url'];
+              tabArray[i] = tempTab;
+            }
+            var data = new Object();
+            data.id = id;
+            data.title = name;
+            data.childTabs = tabArray;
+            //缓存tab id
+            vm.cacheTabIds(id);
+            //缓存tab单个信息
+            var tabObj = {}
+            tabObj["tab_sync_tab_"+id] = JSON.stringify(data)
+            setStorage(tabObj);
+            //添加到页面
+            vm.tabData.push(data)
+          });
+      });
     },
     cacheTabIds(id){
       getStorage(["tab_sync_ids"], function(result) {
@@ -187,10 +188,10 @@ export default {
         setStorage({"tab_sync_ids" : JSON.stringify(ids)});
       })
     },
-    handleChildTabOpen(col,index){
+    handleChildTabOpen(col){
       chrome.tabs.create({url : col.url});
     },
-    handleDeleteTab(row,index){
+    handleDeleteTab(row){
       this.tabData.splice(this.tabData.findIndex(item => item.id === row.id), 1)
       this.removeTabIdFromCache(row.id);
       chrome.storage.local.remove(["tab_sync_tab_" + row.id]);
@@ -216,12 +217,12 @@ export default {
         if(gistId){
           //console.log(gistId)
           const promise = vm.github.gists.get({ gist_id: gistId });
-          const res = await promise.catch(err => {
+          const res = await promise.catch(() => {
             // console.log(err)
           });
           if (res) {
             if(hash(res.data.files['tab.json'].content) === hash(JSON.stringify(vm.tabData))){
-
+              //
             }else{
               // TODO 优化对比 
               // 文件 > 1KB

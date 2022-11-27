@@ -1,23 +1,24 @@
 {
-      "name": "标签一键保存",
-      "version": "0.0.1",
-      "manifest_version": 2,
-      "description": "一键保存所有标签，一键打开所有标签",
-      "icons": {
+    "name": "标签一键保存",
+    "version": "0.0.2",
+    "manifest_version": 2,
+    "description": "一键保存所有标签，一键打开所有标签",
+    "icons": {
         "16": "assets/icons/icon_16.png",
         "48": "assets/icons/icon.png",
         "128": "assets/icons/icon_128.png"
-      },
-      "browser_action": {
+    },
+    "browser_action": {
         "default_icon": "assets/icons/icon.png",
         "default_popup": "popup.html"
-      },
-      "background": {
-        "scripts": ["js/background.js"],
-        "persistent": false
-      },
-      "permissions": [
+    },
+    "background": {
+        "scripts": [
+            "js/background.js"
+        ]
+    },
+    "permissions": [
         "tabs",
         "storage"
-      ]
-    }
+    ]
+}

@@ -3,7 +3,7 @@
  * @author homeless2010
  * @date 2020/05/04
  */
-
+/* global chrome */
  export function createWindow(createData,func){
     chrome.windows.create(createData, func);
  }
@@ -44,6 +44,7 @@ export function hash(input){
     do{
         retValue += I64BIT_TABLE[value & 0x3F];
     }
+    // eslint-disable-next-line no-cond-assign
     while(value >>= 6);
         
     return retValue;
