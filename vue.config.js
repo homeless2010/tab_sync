@@ -4,7 +4,7 @@ const path = require("path");
 // Generate pages object
 const pagesObj = {};
 
-const chromeName = ["popup", "options"];
+const chromeName = ["popup", "options", "background"];
 
 chromeName.forEach(name => {
   pagesObj[name] = {
@@ -13,11 +13,6 @@ chromeName.forEach(name => {
     filename: `${name}.html`
   };
 });
-
-const background = {
-  from: path.resolve("src/background.js"),
-  to: `${path.resolve("dist")}/js/background.js`
-}
 
 const assets = {
   from: path.resolve("src/assets"),
@@ -32,9 +27,6 @@ const plugins =
           to: `${path.resolve("dist")}/manifest.json`
         },
         {
-          ...background
-        },
-        {
           ...assets
         }
       ]
@@ -42,9 +34,6 @@ const plugins =
         {
           from: path.resolve("src/manifest.development.json"),
           to: `${path.resolve("dist")}/manifest.json`
-        },
-        {
-          ...background
         },
         {
           ...assets
@@ -55,5 +44,7 @@ module.exports = {
   pages: pagesObj,
   configureWebpack: {
     plugins: [CopyWebpackPlugin(plugins)]
-  }
+  },
+  productionSourceMap: false,
+  filenameHashing: false
 };
