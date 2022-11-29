@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import {getStorage} from './utils'
+import {getStorage} from '../utils'
 import { Octokit }  from "@octokit/rest"
 
 window.chrome.runtime.onInstalled.addListener(function(details) {
